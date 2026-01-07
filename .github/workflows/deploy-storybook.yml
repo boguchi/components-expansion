@@ -1,4 +1,4 @@
-name: Execute Visual Regression Tests
+name: Deploy Storybook
 
 on:
   push:
