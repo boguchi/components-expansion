@@ -39,4 +39,4 @@ jobs:
         run: |
           npx concurrently -k -s first -n "SB,TEST" -c "magenta,blue" \
             "npx http-server storybook-static --port 8080 --silent" \
-            "npx wait-on tcp:127.0.0.1:8080 && npx playwright test e2e/vr-tests.spec.ts"
+            "npx wait-on tcp:127.0.0.1:8080 && npx playwright test tests/vr-tests.spec.ts"
