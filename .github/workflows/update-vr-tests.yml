@@ -1,0 +1,46 @@
+name: Update Visual Regression Tests
+
+on:
+  pull_request:
+
+permissions:
+  contents: write
+
+jobs:
+  update-snapshot:
+    timeout-minutes: 60
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request' && contains(github.event.pull_request.title, '[update-snapshots]')
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Install node_modules
+        run: npm ci
+
+      - name: Install Playwright
+        run: npx playwright install --with-deps
+
+      - name: Build Storybook
+        run: npm run build-storybook --quiet
+
+      - name: Serve Storybook and run vr-tests
+        run: |
+          npx concurrently -k -s first -n "SB,TEST" -c "magenta,blue" \
+            "npx http-server storybook-static --port 8080 --silent" \
+            "npx wait-on tcp:127.0.0.1:8080 && npx playwright test --update-snapshots"
+
+      - name: Commit and push snapshots if changed
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add tests/vr-tests.spec.ts-snapshots || true
+          git commit -m "chore(vr): update visual snapshots from CI" || echo "no changes to commit"
+          git push origin HEAD:${{ github.head_ref || github.ref_name }}
