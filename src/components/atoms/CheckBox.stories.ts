@@ -22,6 +22,6 @@ export const Default: StoryObj<typeof CheckBox> = {
     template: `<CheckBox v-bind="args" />`,
   }),
   args: {
-    label: "label",
+    label: "label2",
   },
 };
