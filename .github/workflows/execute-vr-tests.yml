@@ -40,15 +40,3 @@ jobs:
           npx concurrently -k -s first -n "SB,TEST" -c "magenta,blue" \
             "npx http-server storybook-static --port 8080 --silent" \
             "npx wait-on tcp:127.0.0.1:8080 && npx playwright test e2e/vr-tests.spec.ts"
-        continue-on-error: true
-
-      - name: Upload diff images
-        if: ${{ steps.test.outcome == 'failure' }}
-        uses: actions/upload-artifact@v4
-        with:
-          name: playwright-diffs
-          path: test-results/**
-
-      - name: Fail job if tests failed
-        if: ${{ steps.test.outcome == 'failure' }}
-        run: exit 1
