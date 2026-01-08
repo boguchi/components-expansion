@@ -72,4 +72,4 @@ jobs:
       - name: Add comment
         env:
           PR_NUMBER: ${{ github.event.number }}
-        run: gh pr comment "${PR_NUMBER}" "https://boguchi.github.io/components-expansion/vr-test"
+        run: gh pr comment "${PR_NUMBER}" --body "https://boguchi.github.io/components-expansion/vr-test"
