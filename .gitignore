@@ -37,6 +37,7 @@ __screenshots__/
 
 *storybook.log
 storybook-static
+src/github-pages/*/**
 
 # Playwright
 /test-results/

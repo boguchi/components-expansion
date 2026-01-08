@@ -13,7 +13,8 @@
     "build-only": "vite build",
     "type-check": "vue-tsc --build",
     "storybook": "storybook dev -p 6006",
-    "build-storybook": "storybook build"
+    "build-storybook": "storybook build",
+    "build-storybook-to-pages": "storybook build -o src/github-pages/storybook"
   },
   "dependencies": {
     "vue": "^3.5.26"
