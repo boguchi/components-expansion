@@ -62,6 +62,7 @@ jobs:
           git fetch origin "$BRANCH"
           if git pull --rebase --autostash origin "$BRANCH"; then
             git push origin HEAD:"$BRANCH"
+          fi
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
