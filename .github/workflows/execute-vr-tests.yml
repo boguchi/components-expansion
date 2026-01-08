@@ -9,6 +9,10 @@ permissions:
   contents: read
   pull-requests: write
 
+environment:
+  name: github-pages
+  url: ${{ steps.deployment.outputs.page_url }}
+
 jobs:
   test:
     timeout-minutes: 30
@@ -52,20 +56,6 @@ jobs:
         with:
           path: src/github-pages/pr-${{ github.event.pull_request.number }}
 
-  deploy:
-    timeout-minutes: 10
-    needs: test
-    runs-on: ubuntu-latest
-
-    permissions:
-      pages: write
-      id-token: write
-
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-
-    steps:
       - name: Deployment
         uses: actions/deploy-pages@v4
 
