@@ -39,13 +39,15 @@ jobs:
 
       - name: Prepare preview directory
         run: |
-          mkdir -p src/github-pages/previews/pr-${{ github.event.pull_request.number }}
-          cp -r playwright-report src/github-pages/previews/pr-${{ github.event.pull_request.number }}/
+          mkdir -p src/github-pages/pr-${{ github.event.pull_request.number }}/vr-test
+          cp -r playwright-report/* src/github-pages/pr-${{ github.event.pull_request.number }}/vr-test/
+          mkdir -p src/github-pages/pr-${{ github.event.pull_request.number }}/storybook
+          cp -r storybook-static src/github-pages/pr-${{ github.event.pull_request.number }}/storybook/
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: src/github-pages
+          path: src/github-pages/pr-${{ github.event.pull_request.number }}
 
   deploy:
     timeout-minutes: 10
