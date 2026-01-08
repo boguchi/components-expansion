@@ -40,3 +40,30 @@ jobs:
           npx concurrently -k -s first -n "SB,TEST" -c "magenta,blue" \
             "npx http-server storybook-static --port 8080 --silent" \
             "npx wait-on tcp:127.0.0.1:8080 && npx playwright test tests/vr-tests.spec.ts"
+
+      - name: Prepare preview directory
+        run: |
+          mkdir -p src/github-pages/previews/pr-${{ github.event.pull_request.number }}
+          cp -r playwright-report src/github-pages/previews/pr-${{ github.event.pull_request.number }}/
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: src/github-pages
+
+  deploy:
+    timeout-minutes: 10
+    needs: test
+    runs-on: ubuntu-latest
+
+    permissions:
+      pages: write
+      id-token: write
+
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
