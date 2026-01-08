@@ -68,5 +68,5 @@ jobs:
           {
             echo "vr-test: https://boguchi.github.io/components-expansion/vr-test"
             echo "storybook: https://boguchi.github.io/components-expansion/storybook"
-          } > /tmp/comment
-          gh pr comment "${PR_NUMBER}" --body /tmp/comment
+          } >> comment
+          gh pr comment "${PR_NUMBER}" --body comment --edit-last
