@@ -9,6 +9,10 @@ jobs:
   build:
     timeout-minutes: 10
     runs-on: ubuntu-latest
+
+    permissions:
+      contents: write
+
     steps:
       - uses: actions/checkout@v4
 
@@ -34,7 +38,7 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add docs
           git commit -m "Deploy ${{ steps.target.outputs.dir }}" || echo "No changes"
-          git push
+          git push origin HEAD:main
 
   deploy:
     timeout-minutes: 10
