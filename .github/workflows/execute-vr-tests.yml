@@ -66,5 +66,10 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
 
     steps:
-      - id: deployment
+      - name: Deployment
         uses: actions/deploy-pages@v4
+
+      - name: Add comment
+        env:
+          PR_NUMBER: ${{ github.event.number }}
+        run: gh pr comment "${PR_NUMBER}" "https://boguchi.github.io/components-expansion/vr-test"
