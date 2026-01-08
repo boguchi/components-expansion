@@ -21,12 +21,17 @@ jobs:
         run: npm ci
 
       - name: Build Storybook
-        run: npm run build-storybook-to-pages
+        run: npm run build-storybook
+
+      - name: Prepare preview directory
+        run: |
+          mkdir -p src/github-pages/storybook
+          cp -r storybook-static/* src/github-pages/storybook/
 
       - name: Upload Storybook
         uses: actions/upload-pages-artifact@v3
         with:
-          path: src/github-pages
+          path: src/github-pages/storybook
 
   deploy:
     timeout-minutes: 10
