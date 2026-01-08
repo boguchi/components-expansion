@@ -10,13 +10,14 @@ on:
       - "components/**"
 
 permissions:
-  contents: read
+  contents: write
   pull-requests: write
   pages: write
   id-token: write
 
 jobs:
   test:
+    if: github.actor == 'boguchi'
     timeout-minutes: 30
     runs-on: ubuntu-latest
     environment:
@@ -48,18 +49,23 @@ jobs:
 
       - name: Prepare preview directory
         run: |
-          mkdir -p src/github-pages/pr-${{ github.event.pull_request.number }}/vr-test
-          mkdir -p src/github-pages/pr-${{ github.event.pull_request.number }}/storybook
+          mkdir -p docs/pr-${{ github.event.pull_request.number }}/vr-test
+          mkdir -p docs/pr-${{ github.event.pull_request.number }}/storybook
+          cp -r playwright-report/* docs/pr-${{ github.event.pull_request.number }}/vr-test/
+          cp -r storybook-static/* docs/pr-${{ github.event.pull_request.number }}/storybook/
 
-      - name: Set files to preview directory
+      - name: Commit and push
         run: |
-          cp -r playwright-report/* src/github-pages/pr-${{ github.event.pull_request.number }}/vr-test/
-          cp -r storybook-static/* src/github-pages/pr-${{ github.event.pull_request.number }}/storybook/
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add docs
+          git commit -m "Deploy ${{ steps.target.outputs.dir }}" || echo "No changes"
+          git push origin HEAD:${{ github.head_ref || github.ref_name }}
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: src/github-pages/pr-${{ github.event.pull_request.number }}
+          path: docs
 
       - name: Deployment
         uses: actions/deploy-pages@v4
@@ -70,7 +76,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           {
-            echo "vr-test: https://boguchi.github.io/components-expansion/vr-test"
-            echo "storybook: https://boguchi.github.io/components-expansion/storybook"
+            echo "vr-test: https://boguchi.github.io/components-expansion/pr-${{ github.event.pull_request.number }}/vr-test"
+            echo "storybook: https://boguchi.github.io/components-expansion/pr-${{ github.event.pull_request.number }}/storybook"
           } > /tmp/comment
           gh pr comment "${PR_NUMBER}" -F /tmp/comment --edit-last
