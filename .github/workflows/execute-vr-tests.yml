@@ -40,6 +40,7 @@ jobs:
           npx concurrently -k -s first -n "SB,TEST" -c "magenta,blue" \
             "npx http-server storybook-static --port 8080 --silent" \
             "npx wait-on tcp:127.0.0.1:8080 && npx playwright test tests/vr-tests.spec.ts"
+        continue-on-error: true
 
       - name: Upload test-result
         uses: actions/upload-artifact@v4
@@ -79,3 +80,7 @@ jobs:
           git add docs
           git commit -m "Upload vr-test pr-${{ github.event.pull_request.number }}"
           git push origin gh-pages
+
+      - name: Fail job if tests failed
+        if: steps.test.outcome == 'failure'
+        run: exit 1
