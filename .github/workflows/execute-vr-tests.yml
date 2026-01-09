@@ -13,72 +13,74 @@ permissions:
 
 jobs:
   test:
-    if: github.actor == 'boguchi'
-    timeout-minutes: 30
     runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
+
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      # - name: Setup Node.js
-      #   uses: actions/setup-node@v4
-      #   with:
-      #     node-version: "20"
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
 
-      # - name: Install node_modules
-      #   run: npm ci
+      - name: Install node_modules
+        run: npm ci
 
-      # - name: Install Playwright
-      #   run: npx playwright install --with-deps
+      - name: Install Playwright
+        run: npx playwright install --with-deps
 
-      # - name: Build Storybook
-      #   run: npm run build-storybook --quiet
+      - name: Build Storybook
+        run: npm run build-storybook --quiet
 
-      # - name: Serve Storybook and run vr-tests
-      #   id: test
-      #   run: |
-      #     npx concurrently -k -s first -n "SB,TEST" -c "magenta,blue" \
-      #       "npx http-server storybook-static --port 8080 --silent" \
-      #       "npx wait-on tcp:127.0.0.1:8080 && npx playwright test tests/vr-tests.spec.ts"
+      - name: Serve Storybook and run vr-tests
+        id: test
+        run: |
+          npx concurrently -k -s first -n "SB,TEST" -c "magenta,blue" \
+            "npx http-server storybook-static --port 8080 --silent" \
+            "npx wait-on tcp:127.0.0.1:8080 && npx playwright test tests/vr-tests.spec.ts"
+        continue-on-error: true
 
-      # - name: Prepare preview directory
-      #   run: |
-      #     mkdir -p docs/pr-${{ github.event.pull_request.number }}/vr-test
-      #     mkdir -p docs/pr-${{ github.event.pull_request.number }}/storybook
-      #     cp -r playwright-report/* docs/pr-${{ github.event.pull_request.number }}/vr-test/
-      #     cp -r storybook-static/* docs/pr-${{ github.event.pull_request.number }}/storybook/
+      - name: Upload test-result
+        uses: actions/upload-artifact@v4
+        with:
+          name: vr-test-${{ github.event.pull_request.number }}
+          path: playwright-report
 
-      # - name: Commit and push
-      #   run: |
-      #     git config user.name "github-actions[bot]"
-      #     git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-      #     git add docs
-      #     git commit -m "Deploy pr-${{ github.event.pull_request.number }}" || echo "No changes"
-      #     BRANCH="${{ github.head_ref || github.ref_name }}"
-      #     git fetch origin "$BRANCH"
-      #     if git pull --rebase --autostash origin "$BRANCH"; then
-      #       git push origin HEAD:"$BRANCH"
-      #     fi
+  update-page:
+    needs: test
+    runs-on: ubuntu-latest
 
-      # - name: Upload Pages artifact
-      #   uses: actions/upload-pages-artifact@v3
-      #   with:
-      #     path: docs
+    permissions:
+      contents: write
 
-      # - name: Deployment
-      #   uses: actions/deploy-pages@v4
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: gh-pages
+          fetch-depth: 0
 
-      # - name: Add comment
-      #   env:
-      #     PR_NUMBER: ${{ github.event.number }}
-      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      #   run: |
-      #     {
-      #       echo "vr-test: https://boguchi.github.io/components-expansion/pr-${{ github.event.pull_request.number }}/vr-test"
-      #       echo "storybook: https://boguchi.github.io/components-expansion/pr-${{ github.event.pull_request.number }}/storybook"
-      #     } > /tmp/comment
-      #     gh pr comment "${PR_NUMBER}" -F /tmp/comment --edit-last
+      - name: Download test-result
+        uses: actions/download-artifact@v5
+        with:
+          name: vr-test-${{ github.event.pull_request.number }}
+          path: playwright-report
+
+      - name: Prepare preview directory
+        run: |
+          mkdir -p docs/pr-${{ github.event.pull_request.number }}/vr-test
+          rm -rf docs/pr-${{ github.event.pull_request.number }}/vr-test/*
+          cp -r playwright-report/* docs/pr-${{ github.event.pull_request.number }}/vr-test/
+
+      - name: Commit and push
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add docs
+          git commit -m "Upload vr-test pr-${{ github.event.pull_request.number }}"
+          git push origin gh-pages
+
+      - name: Fail job if tests failed
+        if: steps.test.outcome == 'failure'
+        run: exit 1
