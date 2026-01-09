@@ -53,7 +53,7 @@ jobs:
         run: |
           mkdir -p docs/pr-${{ github.event.pull_request.number }}/storybook
           rm -rf docs/pr-${{ github.event.pull_request.number }}/storybook/*
-          cp -r storybook-static/* docs/pr-${{ github.event.pull_request.number }}/storybook/
+          cp -r storybook-static docs/pr-${{ github.event.pull_request.number }}/storybook/
 
       - name: Commit and push
         run: |
