@@ -1,0 +1,63 @@
+name: Build pr storybook
+
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Install node_modules
+        run: npm ci
+
+      - name: Build storybook
+        run: npm run build-storybook
+
+      - name: Upload storybook
+        uses: actions/upload-artifact@v4
+        with:
+          name: storybook-${{ github.event.pull_request.number }}
+          path: storybook-static
+
+  update-page:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: gh-pages
+          fetch-depth: 0
+
+      - name: Download storybook
+        uses: actions/download-artifact@v5
+        with:
+          name: storybook-${{ github.event.pull_request.number }}
+
+      - name: Prepare preview directory
+        run: |
+          mkdir -p docs/pr-${{ github.event.pull_request.number }}/storybook
+          rm -rf docs/pr-${{ github.event.pull_request.number }}/storybook/*
+          cp -r storybook-static/* docs/pr-${{ github.event.pull_request.number }}/storybook/
+
+      - name: Commit and push
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add docs
+          git commit -m "Build storybook pr-${{ github.event.pull_request.number }}"
+          git push origin gh-pages
