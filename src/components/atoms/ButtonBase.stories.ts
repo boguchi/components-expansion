@@ -28,7 +28,7 @@ export const Primary: StoryObj<typeof ButtonBase> = {
     template: `<ButtonBase v-bind="args" />`,
   }),
   args: {
-    label: "primary",
+    label: "primary1",
     theme: "primary",
   },
 };
