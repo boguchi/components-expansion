@@ -19,6 +19,9 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: gh-pages
+          fetch-depth: 0
 
       - name: Upload Storybook
         uses: actions/upload-pages-artifact@v3
