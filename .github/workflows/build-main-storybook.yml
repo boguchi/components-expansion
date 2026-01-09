@@ -27,7 +27,7 @@ jobs:
         run: npm ci
 
       - name: Build Storybook
-        run: npm run build-storybook
+        run: npx storybook build --base-path /components-expansion/storybook/
 
       - name: Prepare preview directory
         run: |
