@@ -32,7 +32,7 @@ jobs:
       - name: Prepare preview directory
         run: |
           mkdir -p docs/storybook
-          cp -r storybook-static docs/storybook
+          cp -r storybook-static/* docs/storybook/
 
       - name: Commit and push
         run: |
