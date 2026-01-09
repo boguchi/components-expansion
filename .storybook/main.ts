@@ -8,7 +8,7 @@ const config: StorybookConfig = {
     builder: "@storybook/builder-vite",
   },
   viteFinal: async (config) => {
-    config.base = "/storybook/";
+    config.base = "/components-expansion/storybook/";
     return config;
   },
 };
