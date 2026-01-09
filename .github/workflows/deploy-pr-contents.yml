@@ -1,8 +1,8 @@
-name: Deploy pr storybook
+name: Deploy pr contents
 
 on:
   workflow_run:
-    workflows: ["Build pr storybook"]
+    workflows: ["Build pr storybook", "Execute vr tests"]
     types: [completed]
 
 jobs:
