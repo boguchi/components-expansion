@@ -1,0 +1,36 @@
+name: Deploy main storybook
+
+on:
+  workflow_run:
+    workflows: ["Build main storybook"]
+    types: [completed]
+
+jobs:
+  deploy:
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: gh-pages
+
+      - uses: actions/configure-pages@v5
+
+      - name: Upload Storybook
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: docs
+
+      - name: deployment
+        uses: actions/deploy-pages@v4
