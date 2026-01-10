@@ -24,4 +24,4 @@ jobs:
             echo "vr-test: https://boguchi.github.io/components-expansion/pr-${{ github.event.pull_request.number }}/vr-test"
             echo "storybook: https://boguchi.github.io/components-expansion/pr-${{ github.event.pull_request.number }}/storybook"
           } > /tmp/comment
-          gh pr comment "${PR_NUMBER}" -F /tmp/comment --edit-last
+          gh pr comment "${PR_NUMBER}" -F /tmp/comment --edit-last --create-if-none
