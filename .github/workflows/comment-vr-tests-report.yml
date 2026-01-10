@@ -1,9 +1,9 @@
 name: Comment vr tests report
 
 on:
-  workflow_run:
-    workflows: ["Execute vr tests"]
-    types: [completed]
+  pull_request:
+    branches:
+      - main
 
 permissions:
   pull-requests: write
@@ -14,9 +14,6 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
-        with:
-          ref: ${{ github.event.workflow_run.head_sha }}
-          fetch-depth: 0
 
       - name: Add comment
         env:
