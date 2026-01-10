@@ -2,7 +2,7 @@ name: Deploy pr contents
 
 on:
   workflow_run:
-    workflows: ["Execute vr tests"]
+    workflows: ["Build pr storybook", "Execute vr tests"]
     types: [completed]
 
 jobs:
