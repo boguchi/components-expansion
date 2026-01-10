@@ -4,6 +4,10 @@ on:
   pull_request:
     branches:
       - main
+    paths:
+      - "package.json"
+      - "package-lock.json"
+      - "components/**"
 
 permissions:
   pull-requests: write
