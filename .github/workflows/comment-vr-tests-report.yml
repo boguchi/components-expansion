@@ -1,9 +1,13 @@
 name: Comment vr tests report
 
 on:
-  workflow_run:
-    workflows: ["Execute vr tests"]
-    types: [completed]
+  pull_request:
+    branches:
+      - main
+    paths:
+      - "package.json"
+      - "package-lock.json"
+      - "components/**"
 
 permissions:
   pull-requests: write
@@ -13,6 +17,8 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - uses: actions/checkout@v4
+
       - name: Add comment
         env:
           PR_NUMBER: ${{ github.event.number }}
@@ -22,4 +28,4 @@ jobs:
             echo "vr-test: https://boguchi.github.io/components-expansion/pr-${{ github.event.pull_request.number }}/vr-test"
             echo "storybook: https://boguchi.github.io/components-expansion/pr-${{ github.event.pull_request.number }}/storybook"
           } > /tmp/comment
-          gh pr comment "${PR_NUMBER}" -F /tmp/comment --edit-last
+          gh pr comment "${PR_NUMBER}" -F /tmp/comment --edit-last --create-if-none

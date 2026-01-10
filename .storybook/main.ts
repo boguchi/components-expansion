@@ -1,5 +1,8 @@
 import type { StorybookConfig } from "@storybook/vue3-vite";
 
+const BASE_URL =
+  process.env.STORYBOOK_BASE_URL ?? "/components-expansion/storybook/";
+
 const config: StorybookConfig = {
   stories: ["../src/components/**/*.stories.@(js|jsx|mjs|ts|tsx)"],
   addons: [],
@@ -8,7 +11,7 @@ const config: StorybookConfig = {
     builder: "@storybook/builder-vite",
   },
   viteFinal: async (config) => {
-    config.base = "/components-expansion/storybook/";
+    config.base = BASE_URL;
     return config;
   },
 };
