@@ -34,7 +34,7 @@ jobs:
       - name: Build Storybook
         run: npm run build-storybook
         env:
-          STORYBOOK_BASE_URL: /storybook-static/
+          STORYBOOK_BASE_URL: /
 
       - name: Serve Storybook and run vr-tests
         id: test
